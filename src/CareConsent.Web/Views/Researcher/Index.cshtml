@@ -1,6 +1,71 @@
+@model DashboardViewModel
 @{
     ViewData["Title"] = "Researcher dashboard";
+    string Time(DateTime? value) => value?.ToString("yyyy-MM-dd HH:mm") ?? "–";
 }
 
 <h1>Researcher dashboard</h1>
-<p>Only researchers can see this page. Enrollment counts and the participant list will appear here.</p>
+<p class="text-muted">@Model.StudyTitle</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="border rounded p-3">
+            <div class="text-muted">Total enrollments</div>
+            <div class="fs-2 fw-semibold" id="count-total">@Model.Total</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="border rounded p-3">
+            <div class="text-muted">Started</div>
+            <div class="fs-2 fw-semibold" id="count-started">@Model.Started</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="border rounded p-3">
+            <div class="text-muted">Consented</div>
+            <div class="fs-2 fw-semibold" id="count-consented">@Model.Consented</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="border rounded p-3">
+            <div class="text-muted">Completed</div>
+            <div class="fs-2 fw-semibold" id="count-completed">@Model.Completed</div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h5">Enrollments</h2>
+@if (Model.Enrollments.Count == 0)
+{
+    <p>No one has enrolled yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Record</th>
+                    <th>Participant</th>
+                    <th>Status</th>
+                    <th>Started (UTC)</th>
+                    <th>Consented (UTC)</th>
+                    <th>Completed (UTC)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Enrollments)
+                {
+                    <tr>
+                        <td>@row.Id</td>
+                        <td>@row.Email</td>
+                        <td>@row.Status</td>
+                        <td>@Time(row.StartedAt)</td>
+                        <td>@Time(row.ConsentedAt)</td>
+                        <td>@Time(row.CompletedAt)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

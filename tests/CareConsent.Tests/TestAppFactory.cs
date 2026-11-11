@@ -77,7 +77,11 @@ public class TestAppFactory : WebApplicationFactory<Program>
     }
 
     // Adds a finished enrollment straight into the database.
-    public async Task<int> AddCompletedEnrollmentAsync(string participantId, string typedName)
+    public Task<int> AddCompletedEnrollmentAsync(string participantId, string typedName) =>
+        AddEnrollmentAsync(participantId, EnrollmentStatus.Completed, typedName);
+
+    // Adds an enrollment in the given status straight into the database.
+    public async Task<int> AddEnrollmentAsync(string participantId, EnrollmentStatus status, string typedName = "Test Name")
     {
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -85,10 +89,10 @@ public class TestAppFactory : WebApplicationFactory<Program>
         {
             StudyId = 1,
             ParticipantId = participantId,
-            Status = EnrollmentStatus.Completed,
+            Status = status,
             StartedAt = DateTime.UtcNow,
-            CompletedAt = DateTime.UtcNow,
-            ConsentRecord = new ConsentRecord
+            CompletedAt = status == EnrollmentStatus.Completed ? DateTime.UtcNow : null,
+            ConsentRecord = status == EnrollmentStatus.Started ? null : new ConsentRecord
             {
                 Agreed = true,
                 TypedName = typedName,
