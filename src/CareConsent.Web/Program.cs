@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CareConsent.Web.Data;
 using Npgsql;
@@ -23,7 +24,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // No email is sent in this demo, so accounts do not need email confirmation.
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+// Every POST form must carry a valid anti-forgery token.
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
 var app = builder.Build();
 

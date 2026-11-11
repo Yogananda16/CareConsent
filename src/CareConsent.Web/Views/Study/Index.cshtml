@@ -1,0 +1,35 @@
+@model StudyPageViewModel
+@{
+    ViewData["Title"] = "Study";
+}
+
+<h1>@Model.Study.Title</h1>
+<p class="lead">@Model.Study.Summary</p>
+
+<h2 class="h5 mt-4">What taking part involves</h2>
+<ol>
+    <li>Read and sign the consent form.</li>
+    <li>Answer a short questionnaire.</li>
+    <li>See your confirmation.</li>
+</ol>
+
+@switch (Model.Status)
+{
+    case null:
+        <form asp-action="Start" method="post">
+            <button type="submit" class="btn btn-primary">Take part</button>
+        </form>
+        break;
+    case EnrollmentStatus.Started:
+        <p>You have started. The next step is the consent form.</p>
+        <a class="btn btn-primary" asp-action="Consent">Continue to consent</a>
+        break;
+    case EnrollmentStatus.Consented:
+        <p>You have given consent. The next step is the questionnaire.</p>
+        <a class="btn btn-primary" asp-action="Questionnaire">Continue to questionnaire</a>
+        break;
+    default:
+        <p>You have finished this study. Thank you.</p>
+        <a class="btn btn-primary" asp-action="Confirmation">View your confirmation</a>
+        break;
+}

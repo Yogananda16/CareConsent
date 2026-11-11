@@ -1,0 +1,35 @@
+@model ConsentViewModel
+@{
+    ViewData["Title"] = "Consent form";
+}
+
+<h1>Consent form</h1>
+<p class="text-muted">@Model.StudyTitle &middot; Step 1 of 2 &middot; Consent version @Model.ConsentVersion</p>
+
+<div class="border rounded p-3 mb-4 bg-light">
+    <p class="mb-0">@Model.ConsentText</p>
+</div>
+
+<form asp-action="Consent" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-check mb-3">
+        <input asp-for="Agreed" class="form-check-input" />
+        <label asp-for="Agreed" class="form-check-label"></label>
+        <span asp-validation-for="Agreed" class="text-danger d-block"></span>
+    </div>
+
+    <div class="mb-3" style="max-width: 28rem;">
+        <label asp-for="TypedName" class="form-label"></label>
+        <input asp-for="TypedName" class="form-control" autocomplete="off" />
+        <div class="form-text">Use a made-up name. Do not enter real information.</div>
+        <span asp-validation-for="TypedName" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Sign and continue</button>
+    <a class="btn btn-link" asp-action="Index">Back to the study</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
