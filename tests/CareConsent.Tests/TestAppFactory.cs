@@ -105,6 +105,22 @@ public class TestAppFactory : WebApplicationFactory<Program>
         return enrollment.Id;
     }
 
+    // Runs a query against the test database, to check what was stored.
+    public async Task<T> QueryAsync<T>(Func<ApplicationDbContext, Task<T>> query)
+    {
+        using var scope = Services.CreateScope();
+        return await query(scope.ServiceProvider.GetRequiredService<ApplicationDbContext>());
+    }
+
+    // Posts a form the way a browser would, with the anti-forgery token.
+    // Every page has a token when logged in (the logout form in the top bar).
+    public static async Task<HttpResponseMessage> PostFormAsync(HttpClient client, string url, Dictionary<string, string> form)
+    {
+        var page = await client.GetStringAsync("/");
+        var fields = new Dictionary<string, string>(form) { ["__RequestVerificationToken"] = AntiForgeryToken(page) };
+        return await client.PostAsync(url, new FormUrlEncodedContent(fields));
+    }
+
     public static string AntiForgeryToken(string html) =>
         Regex.Match(html, "name=\"__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"").Groups[1].Value;
 }
