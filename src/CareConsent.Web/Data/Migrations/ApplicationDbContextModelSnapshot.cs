@@ -22,6 +22,221 @@ namespace CareConsent.Web.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CareConsent.Web.Models.ConsentRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Agreed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ConsentVersion")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("SignedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TypedName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnrollmentId")
+                        .IsUnique();
+
+                    b.ToTable("ConsentRecords");
+                });
+
+            modelBuilder.Entity("CareConsent.Web.Models.Enrollment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ParticipantId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("StudyId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.HasIndex("StudyId", "ParticipantId")
+                        .IsUnique();
+
+                    b.ToTable("Enrollments");
+                });
+
+            modelBuilder.Entity("CareConsent.Web.Models.ScreeningAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ScreeningQuestionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScreeningQuestionId");
+
+                    b.HasIndex("EnrollmentId", "ScreeningQuestionId")
+                        .IsUnique();
+
+                    b.ToTable("ScreeningAnswers");
+                });
+
+            modelBuilder.Entity("CareConsent.Web.Models.ScreeningQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StudyId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudyId");
+
+                    b.ToTable("ScreeningQuestions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Order = 1,
+                            StudyId = 1,
+                            Text = "Are you 18 years of age or older?",
+                            Type = "YesNo"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Order = 2,
+                            StudyId = 1,
+                            Text = "On a typical day, how many glasses of water do you drink?",
+                            Type = "Number"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Order = 3,
+                            StudyId = 1,
+                            Text = "How would you rate your sleep last week, from 1 (poor) to 5 (great)?",
+                            Type = "Scale"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Order = 4,
+                            StudyId = 1,
+                            Text = "Do you usually take a walk during the day?",
+                            Type = "YesNo"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Order = 5,
+                            StudyId = 1,
+                            Text = "Is there anything else you would like to tell the fictional study team?",
+                            Type = "Text"
+                        });
+                });
+
+            modelBuilder.Entity("CareConsent.Web.Models.Study", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConsentText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConsentVersion")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Studies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ConsentText = "This is a fictional study used for a software demo. By agreeing, you confirm that you understand: (1) no real research is taking place, (2) you should not enter any real personal or health information, (3) your answers are stored only as demo data, and (4) you may stop at any time.",
+                            ConsentVersion = "1.0",
+                            Summary = "A made-up study about everyday habits such as sleep, water, and walking. It exists only to demonstrate this web app. No real research is being done.",
+                            Title = "Daily Routines and Wellbeing Study (Fictional)"
+                        });
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -222,6 +437,66 @@ namespace CareConsent.Web.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CareConsent.Web.Models.ConsentRecord", b =>
+                {
+                    b.HasOne("CareConsent.Web.Models.Enrollment", "Enrollment")
+                        .WithOne("ConsentRecord")
+                        .HasForeignKey("CareConsent.Web.Models.ConsentRecord", "EnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enrollment");
+                });
+
+            modelBuilder.Entity("CareConsent.Web.Models.Enrollment", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CareConsent.Web.Models.Study", "Study")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("StudyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Participant");
+
+                    b.Navigation("Study");
+                });
+
+            modelBuilder.Entity("CareConsent.Web.Models.ScreeningAnswer", b =>
+                {
+                    b.HasOne("CareConsent.Web.Models.Enrollment", "Enrollment")
+                        .WithMany("Answers")
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CareConsent.Web.Models.ScreeningQuestion", "Question")
+                        .WithMany()
+                        .HasForeignKey("ScreeningQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enrollment");
+
+                    b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("CareConsent.Web.Models.ScreeningQuestion", b =>
+                {
+                    b.HasOne("CareConsent.Web.Models.Study", "Study")
+                        .WithMany("Questions")
+                        .HasForeignKey("StudyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Study");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -271,6 +546,20 @@ namespace CareConsent.Web.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CareConsent.Web.Models.Enrollment", b =>
+                {
+                    b.Navigation("Answers");
+
+                    b.Navigation("ConsentRecord");
+                });
+
+            modelBuilder.Entity("CareConsent.Web.Models.Study", b =>
+                {
+                    b.Navigation("Enrollments");
+
+                    b.Navigation("Questions");
                 });
 #pragma warning restore 612, 618
         }
