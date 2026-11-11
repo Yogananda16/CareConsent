@@ -1,4 +1,5 @@
 ﻿using CareConsent.Web.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,7 +42,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             a.HasOne(x => x.Question).WithMany().HasForeignKey(x => x.ScreeningQuestionId);
         });
 
+        SeedRoles(builder);
         SeedStudy(builder);
+    }
+
+    // Fixed IDs and stamps so the migration does not change on every build.
+    private static void SeedRoles(ModelBuilder builder)
+    {
+        builder.Entity<IdentityRole>().HasData(
+            new IdentityRole { Id = "role-participant", Name = Models.Roles.Participant, NormalizedName = "PARTICIPANT", ConcurrencyStamp = "role-participant" },
+            new IdentityRole { Id = "role-researcher", Name = Models.Roles.Researcher, NormalizedName = "RESEARCHER", ConcurrencyStamp = "role-researcher" });
     }
 
     // One fictional study. The questions are made up and are not diagnostic.

@@ -4,6 +4,7 @@ using CareConsent.Web.Models;
 
 namespace CareConsent.Web.Controllers;
 
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
 public class HomeController : Controller
 {
     public IActionResult Index()

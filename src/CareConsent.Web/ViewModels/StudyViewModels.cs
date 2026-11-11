@@ -46,6 +46,7 @@ public class AnswerInput
 
 public class ConfirmationViewModel
 {
+    public int EnrollmentId { get; set; }
     public required string StudyTitle { get; set; }
     public required string TypedName { get; set; }
     public required string ConsentVersion { get; set; }

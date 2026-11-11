@@ -8,6 +8,8 @@
 
 <h2 class="h5 mt-4">Your consent</h2>
 <dl class="row">
+    <dt class="col-sm-3">Record</dt>
+    <dd class="col-sm-9"><a asp-action="Record" asp-route-id="@Model.EnrollmentId">Record number @Model.EnrollmentId</a></dd>
     <dt class="col-sm-3">Signed as</dt>
     <dd class="col-sm-9">@Model.TypedName</dd>
     <dt class="col-sm-3">Signed at</dt>

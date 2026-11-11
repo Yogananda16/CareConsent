@@ -12,7 +12,7 @@ namespace CareConsent.Web.Controllers;
 // The participant flow: study page -> consent -> questionnaire -> confirmation.
 // Every query filters by the logged-in user's ID, so a participant only ever
 // sees their own enrollment.
-[Authorize]
+[Authorize(Roles = Roles.Participant)]
 public class StudyController(ApplicationDbContext db, UserManager<IdentityUser> userManager) : Controller
 {
     public async Task<IActionResult> Index()
@@ -166,21 +166,51 @@ public class StudyController(ApplicationDbContext db, UserManager<IdentityUser> 
             return RedirectToStep(enrollment);
         }
 
+        return View(await BuildConfirmationAsync(enrollment, study.Title));
+    }
+
+    // One enrollment by ID, for example /Study/Record/12. The query also
+    // filters by the logged-in user's ID, so changing the ID in the URL never
+    // shows another participant's record. Unknown IDs and other people's IDs
+    // get the same "access denied" answer, so IDs cannot be probed.
+    public async Task<IActionResult> Record(int id)
+    {
+        var userId = userManager.GetUserId(User);
+        var enrollment = await db.Enrollments
+            .Include(e => e.ConsentRecord)
+            .Include(e => e.Study)
+            .FirstOrDefaultAsync(e => e.Id == id && e.ParticipantId == userId);
+
+        if (enrollment is null)
+        {
+            return Forbid();
+        }
+        if (enrollment is not { Status: EnrollmentStatus.Completed, ConsentRecord: not null })
+        {
+            return RedirectToStep(enrollment);
+        }
+
+        return View(nameof(Confirmation), await BuildConfirmationAsync(enrollment, enrollment.Study.Title));
+    }
+
+    private async Task<ConfirmationViewModel> BuildConfirmationAsync(Enrollment enrollment, string studyTitle)
+    {
         var answers = await db.ScreeningAnswers
             .Where(a => a.EnrollmentId == enrollment.Id)
             .OrderBy(a => a.Question.Order)
             .Select(a => new AnsweredQuestion(a.Question.Text, a.Value))
             .ToListAsync();
 
-        return View(new ConfirmationViewModel
+        return new ConfirmationViewModel
         {
-            StudyTitle = study.Title,
-            TypedName = enrollment.ConsentRecord.TypedName,
+            EnrollmentId = enrollment.Id,
+            StudyTitle = studyTitle,
+            TypedName = enrollment.ConsentRecord!.TypedName,
             ConsentVersion = enrollment.ConsentRecord.ConsentVersion,
             SignedAt = enrollment.ConsentRecord.SignedAt,
             CompletedAt = enrollment.CompletedAt,
             Answers = answers
-        });
+        };
     }
 
     // There is one seeded study in this demo.

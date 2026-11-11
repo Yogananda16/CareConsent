@@ -6,5 +6,12 @@
     <h1 class="display-5">CareConsent</h1>
     <p class="lead">A demo web app for a fictional research study.</p>
     <p>Read about the study, give consent, and answer a short questionnaire.</p>
-    <a class="btn btn-primary" asp-controller="Study" asp-action="Index">Go to the study</a>
+    @if (User.IsInRole(Roles.Researcher))
+    {
+        <a class="btn btn-primary" asp-controller="Researcher" asp-action="Index">Go to the dashboard</a>
+    }
+    else
+    {
+        <a class="btn btn-primary" asp-controller="Study" asp-action="Index">Go to the study</a>
+    }
 </div>

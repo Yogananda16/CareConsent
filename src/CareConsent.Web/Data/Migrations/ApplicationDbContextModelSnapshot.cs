@@ -261,6 +261,22 @@ namespace CareConsent.Web.Data.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "role-participant",
+                            ConcurrencyStamp = "role-participant",
+                            Name = "Participant",
+                            NormalizedName = "PARTICIPANT"
+                        },
+                        new
+                        {
+                            Id = "role-researcher",
+                            ConcurrencyStamp = "role-researcher",
+                            Name = "Researcher",
+                            NormalizedName = "RESEARCHER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
