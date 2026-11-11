@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CareConsent.Web.Data;
+using CareConsent.Web.Services;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,7 +35,12 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddControllersWithViews(options =>
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
+builder.Services.Configure<DemoOptions>(builder.Configuration.GetSection("Demo"));
+
 var app = builder.Build();
+
+// Creates the two fictional demo accounts, only when Demo:Enabled is true.
+await DemoSeeder.SeedAsync(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

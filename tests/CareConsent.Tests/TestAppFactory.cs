@@ -22,6 +22,9 @@ public class TestAppFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        // Tests create their own users, so the demo accounts are switched off.
+        builder.UseSetting("Demo:Enabled", "false");
+
         builder.ConfigureServices(services =>
         {
             var postgres = services

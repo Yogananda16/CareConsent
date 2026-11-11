@@ -1,0 +1,64 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<h1>Log in</h1>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="mb-3">
+                <label asp-for="Input.Email" class="form-label"></label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.Password" class="form-label"></label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="Input.RememberMe" class="form-check-input" />
+                <label asp-for="Input.RememberMe" class="form-check-label"></label>
+            </div>
+            <button type="submit" class="btn btn-primary">Log in</button>
+            <a class="btn btn-link" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new participant</a>
+        </form>
+    </div>
+
+    @if (Model.Demo is not null)
+    {
+        <div class="col-md-7">
+            <div class="border rounded p-3 bg-light" id="demo-logins">
+                <h2 class="h5">Demo logins</h2>
+                <p>These two accounts are fictional and exist only for this demo.</p>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr><th>Role</th><th>Email</th><th>Password</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Participant</td>
+                                <td><code>@Model.Demo.ParticipantEmail</code></td>
+                                <td><code>@Model.Demo.ParticipantPassword</code></td>
+                            </tr>
+                            <tr>
+                                <td>Researcher</td>
+                                <td><code>@Model.Demo.ResearcherEmail</code></td>
+                                <td><code>@Model.Demo.ResearcherPassword</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
