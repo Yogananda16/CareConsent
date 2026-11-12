@@ -2,11 +2,7 @@
 
 **A small research-study web app that shows how participants give informed consent and how researchers securely review study responses.**
 
-Participants register, read a fictional study, sign a consent form, and complete a five-question screening survey. Authorized researchers see enrollment progress, review submitted answers, and retrieve summary statistics. **All study content and demo accounts are fictional.**
-
 **[Live demo](https://careconsent.dev)** · [How it works](#how-it-works) · [Security & privacy](#security-and-privacy) · [Architecture](#system-architecture) · [Testing & CI/CD](#testing-and-cicd) · [Technical docs](#dive-deeper)
-
-> **Portfolio demonstration, not a clinical system.** Do not enter real personal or patient information. This project is not affiliated with a healthcare institution, does not conduct real research, and does not claim HIPAA compliance.
 
 ## The idea in 30 seconds
 
@@ -16,8 +12,8 @@ In a research study, participants need to understand what they are agreeing to, 
 |---|---|
 | Creates an account, reviews the study, consents, answers questions, and sees a confirmation. | Uses a provisioned researcher account to see enrollment statuses, review responses, and read study statistics. |
 
-![CareConsent homepage, displaying the fictional-data notice and study entry point](<img width="1428" height="804" alt="Screenshot 2026-11-12 121556" src="https://github.com/user-attachments/assets/09ee0f04-8a50-42fa-9101-28da19f49531" />
-)
+CareConsent Study Form
+<img width="1428" height="804" alt="Screenshot 2026-11-12 121556" src="https://github.com/user-attachments/assets/b3ba1d85-087b-4f9f-b91d-62240c0989c3" />
 
 ## How it works
 
@@ -39,9 +35,6 @@ flowchart LR
     class P,R,S,C,Q,F participant
     class T,L,D,V,A researcher
 ```
-
-**Important distinction:** Public registration always creates a **Participant** account. Researcher access is restricted; there is no self-service researcher registration or approval workflow in the current demo.
-
 ## System architecture
 
 One simple ASP.NET Core application handles web pages, authorization, business rules, and an API. PostgreSQL stores the records. AWS hosts the app and its database.
@@ -101,6 +94,10 @@ The app uses Identity users plus five main entities:
 
 Every participant can have **one enrollment per study**; each enrollment has at most one consent record and one response per question. The seeded **Daily Routines and Wellbeing Study** contains five invented, non-diagnostic questions.
 
+SQL Database
+<img width="1428" height="846" alt="Screenshot 2026-11-12 122656" src="https://github.com/user-attachments/assets/687b6639-45e9-4043-b62b-3c22ac45ff82" />
+
+
 ## Testing and CI/CD
 
 **86 automated tests** cover validation rules, participant flows, authentication, authorization, dashboard behavior, researcher details, and the JSON API. Integration tests run the ASP.NET Core app in memory with a test database; they do **not** require a live AWS database.
@@ -113,8 +110,9 @@ flowchart LR
     Z --> O[AWS OIDC authentication]
     O --> E[Elastic Beanstalk deploy]
 ```
+Successful CI/CD Pipeline running with Github Actions
+<img width="1420" height="806" alt="Screenshot 2026-11-12 121900" src="https://github.com/user-attachments/assets/ed6ac9f6-e1ce-499e-a035-970c7c7b7e06" />
 
-![Successful CareConsent GitHub Actions workflow, including build, tests, and AWS deployment request](docs/screenshots/ci-pipeline.png)
 
 The workflow passed its build/test/deployment-command steps. **A green GitHub Actions run alone does not verify that Elastic Beanstalk completed deployment or that the public app is healthy**; those are checked separately in AWS and the browser. Schema migrations are applied separately, not automatically by CI/CD.
 
