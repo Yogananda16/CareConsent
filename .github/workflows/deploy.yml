@@ -1,0 +1,77 @@
+name: CareConsent CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: careconsent-deployment
+  cancel-in-progress: false
+
+jobs:
+  build-test-deploy:
+    name: Build, Test and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Install .NET SDK
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Step 3: Restore project dependencies
+      - name: Restore dependencies
+        run: dotnet restore CareConsent.sln
+
+      # Step 4: Run automated tests
+      - name: Run automated tests
+        run: dotnet test CareConsent.sln --configuration Release --no-restore
+
+      # Step 5: Publish ASP.NET Core application
+      - name: Publish application
+        run: dotnet publish src/CareConsent.Web -c Release -o publish --no-restore
+
+      # Step 6: Create Linux-compatible deployment ZIP
+      - name: Create deployment ZIP
+        run: |
+          cd publish
+          zip -qr ../careconsent.zip .
+
+      # Step 7: Authenticate with AWS using OIDC
+      - name: Connect to AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::489234564085:role/CareConsentGitHubActionsRole
+          aws-region: us-east-1
+
+      # Step 8: Deploy to AWS Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          VERSION="github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          BUCKET="elasticbeanstalk-us-east-1-489234564085"
+          KEY="careconsent/github-actions/${VERSION}.zip"
+
+          aws s3 cp careconsent.zip "s3://${BUCKET}/${KEY}"
+
+          aws elasticbeanstalk create-application-version \
+            --application-name careconsent \
+            --version-label "$VERSION" \
+            --source-bundle "S3Bucket=${BUCKET},S3Key=${KEY}"
+
+          aws elasticbeanstalk update-environment \
+            --environment-name Careconsent-env \
+            --version-label "$VERSION"
