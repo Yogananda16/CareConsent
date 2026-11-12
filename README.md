@@ -13,6 +13,10 @@ In a research study, participants need to understand what they are agreeing to, 
 | Creates an account, reviews the study, consents, answers questions, and sees a confirmation. | Uses a provisioned researcher account to see enrollment statuses, review responses, and read study statistics. |
 
 CareConsent Study Form
+
+<img width="1432" height="476" alt="Screenshot 2026-11-12 122118" src="https://github.com/user-attachments/assets/681ee55a-69a6-4bc0-a6a5-c81626c0d040" />
+
+
 <img width="1428" height="804" alt="Screenshot 2026-11-12 121556" src="https://github.com/user-attachments/assets/b3ba1d85-087b-4f9f-b91d-62240c0989c3" />
 
 ## How it works
