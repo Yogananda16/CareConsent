@@ -6,7 +6,7 @@ Participants register, read a fictional study, sign a consent form, and complete
 
 **[Live demo](https://careconsent.dev)** · [How it works](#how-it-works) · [Security & privacy](#security-and-privacy) · [Architecture](#system-architecture) · [Testing & CI/CD](#testing-and-cicd) · [Technical docs](#dive-deeper)
 
-> **Portfolio demonstration, not a clinical system.** Do not enter real personal or patient information. This project is not affiliated with a healthcare institution, does not conduct real research, and does not claim HIPAA compliance. See [security limitations](docs/security-and-privacy.md#current-limitations).
+> **Portfolio demonstration, not a clinical system.** Do not enter real personal or patient information. This project is not affiliated with a healthcare institution, does not conduct real research, and does not claim HIPAA compliance.
 
 ## The idea in 30 seconds
 
