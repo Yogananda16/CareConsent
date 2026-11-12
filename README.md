@@ -2,11 +2,7 @@
 
 **A small research-study web app that shows how participants give informed consent and how researchers securely review study responses.**
 
-Participants register, read a fictional study, sign a consent form, and complete a five-question screening survey. Authorized researchers see enrollment progress, review submitted answers, and retrieve summary statistics. **All study content and demo accounts are fictional.**
-
 **[Live demo](https://careconsent.dev)** · [How it works](#how-it-works) · [Security & privacy](#security-and-privacy) · [Architecture](#system-architecture) · [Testing & CI/CD](#testing-and-cicd) · [Technical docs](#dive-deeper)
-
-> **Portfolio demonstration, not a clinical system.** Do not enter real personal or patient information. This project is not affiliated with a healthcare institution, does not conduct real research, and does not claim HIPAA compliance. See [security limitations](docs/security-and-privacy.md#current-limitations).
 
 ## The idea in 30 seconds
 
@@ -16,7 +12,12 @@ In a research study, participants need to understand what they are agreeing to, 
 |---|---|
 | Creates an account, reviews the study, consents, answers questions, and sees a confirmation. | Uses a provisioned researcher account to see enrollment statuses, review responses, and read study statistics. |
 
-![CareConsent homepage, displaying the fictional-data notice and study entry point](docs/screenshots/homepage.png)
+CareConsent Study Form
+
+<img width="1432" height="476" alt="Screenshot 2026-11-12 122118" src="https://github.com/user-attachments/assets/681ee55a-69a6-4bc0-a6a5-c81626c0d040" />
+
+
+<img width="1428" height="804" alt="Screenshot 2026-11-12 121556" src="https://github.com/user-attachments/assets/b3ba1d85-087b-4f9f-b91d-62240c0989c3" />
 
 ## How it works
 
@@ -38,9 +39,6 @@ flowchart LR
     class P,R,S,C,Q,F participant
     class T,L,D,V,A researcher
 ```
-
-**Important distinction:** Public registration always creates a **Participant** account. Researcher access is restricted; there is no self-service researcher registration or approval workflow in the current demo.
-
 ## System architecture
 
 One simple ASP.NET Core application handles web pages, authorization, business rules, and an API. PostgreSQL stores the records. AWS hosts the app and its database.
@@ -56,10 +54,6 @@ flowchart TB
     SM[AWS Secrets Manager] -.->|DB connection configuration| EB
     GH[GitHub Actions] -.->|Build, test, deploy| EB
 ```
-
-*The browser-to-CloudFront link uses HTTPS; **CloudFront-to-Elastic Beanstalk currently uses HTTP**. This is a known demo limitation, not end-to-end TLS. See [AWS architecture](docs/aws-deployment.md) and [security notes](docs/security-and-privacy.md).
-
-[**Explore the full architecture →**](docs/architecture.md)
 
 ## What I built
 
@@ -84,10 +78,6 @@ Security was part of the design, not an afterthought.
 | **Credential management** | Database connection configuration is supplied through AWS Secrets Manager on deployment. |
 | **Data boundaries** | Fictional seeded study; demo banner warns against entering real personal or health information. |
 
-**Not production-ready:** origin TLS is incomplete, the demo uses openly shared accounts, and the deployment role needs least-privilege hardening. No real patient information should be submitted.
-
-[**Security design, access matrix & limitations →**](docs/security-and-privacy.md)
-
 ## Tech stack
 
 | Layer | Technologies |
@@ -108,7 +98,9 @@ The app uses Identity users plus five main entities:
 
 Every participant can have **one enrollment per study**; each enrollment has at most one consent record and one response per question. The seeded **Daily Routines and Wellbeing Study** contains five invented, non-diagnostic questions.
 
-[**See entity relationships and request/data flow →**](docs/database-design.md)
+SQL Database
+<img width="1428" height="846" alt="Screenshot 2026-11-12 122656" src="https://github.com/user-attachments/assets/687b6639-45e9-4043-b62b-3c22ac45ff82" />
+
 
 ## Testing and CI/CD
 
@@ -122,59 +114,12 @@ flowchart LR
     Z --> O[AWS OIDC authentication]
     O --> E[Elastic Beanstalk deploy]
 ```
+Successful CI/CD Pipeline running with Github Actions
+<img width="1420" height="806" alt="Screenshot 2026-11-12 121900" src="https://github.com/user-attachments/assets/ed6ac9f6-e1ce-499e-a035-970c7c7b7e06" />
 
-![Successful CareConsent GitHub Actions workflow, including build, tests, and AWS deployment request](docs/screenshots/ci-pipeline.png)
 
 The workflow passed its build/test/deployment-command steps. **A green GitHub Actions run alone does not verify that Elastic Beanstalk completed deployment or that the public app is healthy**; those are checked separately in AWS and the browser. Schema migrations are applied separately, not automatically by CI/CD.
 
-[**Testing strategy and CI/CD details →**](docs/testing-and-cicd.md)
-
-## Application screenshots
-
-| Participant registration | Live application home |
-|---|---|
-| ![Fictional participant registration form](docs/screenshots/register.png) | ![CareConsent homepage](docs/screenshots/homepage.png) |
-
-**Next screenshots to capture:** study and consent, questionnaire and confirmation, researcher dashboard, and researcher response details. Use fictional data only. See the [screenshot checklist](docs/screenshots/README.md) for suggested filenames and framing.
-
-## Run locally
-
-**Requirements:** .NET 10 SDK, PostgreSQL, and EF Core CLI (`dotnet ef`). The default local connection in `appsettings.json` targets `localhost:5433`, database `careconsent`, user `postgres`; adjust it for your own setup.
-
-```powershell
-# From the repository root
-# Configure the local database password with .NET user-secrets (do not commit credentials).
-dotnet user-secrets set "DbPassword" "<your-local-database-password>" --project src/CareConsent.Web
-
-# Create/update the database schema
-dotnet ef database update --project src/CareConsent.Web --startup-project src/CareConsent.Web
-
-# Run the application
-dotnet run --project src/CareConsent.Web
-```
-
-Then open the local URL printed in the terminal (typically `http://localhost:5180`). To run the automated tests:
-
-```powershell
-dotnet test CareConsent.sln
-```
-
-The development configuration enables demo seeding only if demo passwords are provided via local user-secrets. See [local setup and deployment notes](docs/aws-deployment.md#local-development).
-
-## Dive deeper
-
-| Document | What's inside |
-|---|---|
-| [**Architecture**](docs/architecture.md) | MVC request flow, participants vs researchers, component boundaries |
-| [**Security & privacy**](docs/security-and-privacy.md) | RBAC matrix, ownership checks, consent validation, risk/limitations |
-| [**Database design**](docs/database-design.md) | ER diagram, constraints, EF Core and migrations |
-| [**AWS deployment**](docs/aws-deployment.md) | Domain, DNS, certificates, CloudFront, EC2, RDS, Secrets Manager |
-| [**Testing & CI/CD**](docs/testing-and-cicd.md) | Test cases, GitHub Actions, AWS OIDC, delivery checks |
-| [**Screenshot guide**](docs/screenshots/README.md) | Images to capture, naming, privacy checklist |
-
-## What I'd improve next
-
-Add HTTPS from CloudFront to the application origin and restrict origin access; replace temporary broad deployment permissions with tightly scoped IAM; add researcher access approval and audit logging; improve deployment health checks and monitoring. These are **future improvements**, not implemented features.
 
 ---
 
