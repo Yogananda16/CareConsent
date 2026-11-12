@@ -16,7 +16,8 @@ In a research study, participants need to understand what they are agreeing to, 
 |---|---|
 | Creates an account, reviews the study, consents, answers questions, and sees a confirmation. | Uses a provisioned researcher account to see enrollment statuses, review responses, and read study statistics. |
 
-![CareConsent homepage, displaying the fictional-data notice and study entry point](docs/screenshots/homepage.png)
+![CareConsent homepage, displaying the fictional-data notice and study entry point](<img width="1428" height="804" alt="Screenshot 2026-11-12 121556" src="https://github.com/user-attachments/assets/09ee0f04-8a50-42fa-9101-28da19f49531" />
+)
 
 ## How it works
 
